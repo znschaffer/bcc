@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-int data_size = 30000;
-int instruction_size = 200;
-int instruction_count;
+size_t data_size = 30000;
+size_t instruction_size = 200;
+size_t instruction_count;
 int *jumps;
 
 char *instructions;
@@ -46,7 +46,7 @@ static void build_jump_list(void)
 	}
 }
 
-static void upsize(void **arr, int *curSize, int neededSize)
+static void upsize(void **arr, size_t *curSize, size_t neededSize)
 {
 	while (neededSize >= *curSize) {
 		void *tmp = realloc(*arr, 2 * *curSize * sizeof(*arr));
@@ -66,15 +66,16 @@ int main(int argc, char **argv)
 
 	data = calloc(data_size, sizeof(char));
 	instructions = calloc(instruction_size, sizeof(char));
-	int c;
+	char c;
 
-	FILE *file;
-	if ((file = fopen(argv[1], "r")) == NULL) {
+	FILE *file = fopen(argv[1], "r");
+
+	if (file == NULL) {
 		fprintf(stderr, "Couldn't open file: %s\n", argv[1]);
 		return 1;
 	}
 
-	while ((c = getc(file)) != EOF) {
+	while ((c = (char)getc(file)) != EOF) {
 		if (c != '[' && c != ']' && c != '>' && c != '<' && c != '+' &&
 		    c != '-' && c != '.' && c != ',') {
 			continue;
@@ -136,7 +137,6 @@ int main(int argc, char **argv)
 	free(instructions);
 	free(data);
 	free(jumps);
-
 	printf("\n");
 	return 0;
 }
